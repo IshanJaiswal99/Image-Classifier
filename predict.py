@@ -27,3 +27,26 @@ def load_checkpoint(checkpoint_path):
     return model, optimizer, scheduler
 
 
+def process_image(image):
+    ''' Scales, crops, and normalizes a PIL image for a PyTorch model,
+        returns an Numpy array
+    '''
+    # TODO: Process a PIL image for use in a PyTorch model
+    image = PIL.Image.open(image)
+    image.thumbnail([256,256], PIL.Image.LANCZOS)
+    
+    width, height = image.size 
+    
+    left = (width - 224)/2
+    top = (height - 224)/2
+    right = (width + 224)/2
+    bottom = (height + 224)/2
+    
+    image = image.crop((left,top,right,bottom))
+    
+    np_image = np.array(image) / 255
+    
+    np_image = ((np_image - [0.485, 0.456, 0.406]) / [0.229, 0.224, 0.225]).transpose(2,0,1)
+
+    return np_image
+
