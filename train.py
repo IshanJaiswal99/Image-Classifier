@@ -68,6 +68,21 @@ def Createtransforms(data_dir):
     return dataset_sizes, loader, data_sets
 
 
+
+def save_checkpoint(model,training_image_datasets,option):
+    checkpoint = {
+    'state_dict': model.state_dict(),
+    'model': model,
+    'classifier': model.classifier,
+    'class_to_idx': training_image_datasets.class_to_idx
+    }
+
+    torch.save(checkpoint, option['save_dir'] + 'checkpoint.pth')
+    
+    
+    
+    
+
 def build_train_model(option, dataset_sizes, loader, data_sets):
     
     #model = torchvision.models.vgg16(pretrained=True)
