@@ -80,7 +80,7 @@ def save_checkpoint(model,training_image_datasets,option):
     torch.save(checkpoint, option['save_dir'] + 'checkpoint.pth')
     
     
-    
+
     
 
 def build_train_model(option, dataset_sizes, loader, data_sets):
@@ -157,3 +157,64 @@ def build_train_model(option, dataset_sizes, loader, data_sets):
     save_checkpoint(model,data_sets['train'],option)
     
  
+    
+
+def main():
+    # Command line arguments
+    parser = argparse.ArgumentParser(description='Train a new network on a data set')
+
+    parser.add_argument('data_dir', type=str, help='Path of the Image Dataset (with train, valid and test folders)')
+    parser.add_argument('--save_dir', type=str, help='Directory to save checkpoints')
+    parser.add_argument('--arch', type=str,  help='Models architeture. Default is vgg16. Choose one at https://pytorch.org/docs/master/torchvision/models.html')
+    parser.add_argument('--learning_rate', type=float,   help='Learning rate. Default is 0.01')
+    parser.add_argument('--hidden_units', type=int,  help='Hidden units. Default is 200')
+    parser.add_argument('--epochs', type=int, help='Number of epochs. Default is 3')
+    parser.add_argument('--gpu', action='store_true', help='Use GPU for inference if available')
+    args, _ = parser.parse_known_args()
+    
+    option = {}
+    
+    
+    save_dir = './'
+    if args.save_dir:
+        save_dir = args.save_dir
+    option['save_dir'] = save_dir
+    
+    
+    arch = 'vgg16'
+    if args.arch:
+        arch = args.arch
+    option['arch'] = arch
+    
+    learning_rate = 0.001
+    if args.learning_rate:
+        learning_rate = args.learning_rate
+    option['learning_rate'] = learning_rate
+    
+    hidden_units = 512
+    if args.hidden_units:
+        hidden_units = args.hidden_units
+    option['hidden_units'] = hidden_units
+    
+    
+    epochs = 15
+    if args.epochs:
+        epochs = args.epochs
+    
+    option['epochs'] = epochs
+    
+    
+    cuda = False
+    if args.gpu:
+        if torch.cuda.is_available():
+            cuda = True
+        else:
+            print("Warning! GPU flag was set however no GPU is available in \
+                the machine")
+    option['cuda'] = cuda
+    
+    dataset_sizes, loaders, data_sets = Createtransforms(args.data_dir)
+    build_train_model(option, dataset_sizes, loaders, data_sets)
+    
+if __name__ == '__main__': main()
+    
