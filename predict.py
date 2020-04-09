@@ -82,4 +82,13 @@ def predict(image_path, model, topk,cuda,cat_to_name):
         
     print_result(probs, names)
     
+    
+def print_result(probs, flowers):
+    
+    #print("Best Likly Flower is: {}".format(flowers[0]))
+    #print(probs)
+    for i in range (len(flowers)):
+        print("Rank {}:".format(i+1),
+            "Flower: {} , Probability: {}".format(flowers[i], probs[i]))
+
 
