@@ -92,3 +92,46 @@ def print_result(probs, flowers):
             "Flower: {} , Probability: {}".format(flowers[i], probs[i]))
 
 
+def main():
+    # Command line arguments
+    parser = argparse.ArgumentParser(description='Predict flower name from an image along with the probability of that name')
+    parser.add_argument('input', type=str, help='Image path')
+    parser.add_argument('checkpoint', type=str, help='Models checkpoint for inference')
+    parser.add_argument('--top_k', type=int, help='Return top k most likely classes. Default value 5')
+    parser.add_argument('--category_names', type=str, help='Use a mapping of categories to real names from a json file')
+    parser.add_argument('--gpu', action='store_true', help='Use GPU for inference if available')
+
+    # Parse and read arguments and assign them to variables if exists 
+    args, _ = parser.parse_known_args()
+
+    image_path = args.input
+    checkpoint = args.checkpoint
+
+    top_k = 5
+    if args.top_k:
+        top_k = args.top_k
+
+    category_names = 'cat_to_name.json'
+    if args.category_names:
+        category_names = args.category_names
+
+    cuda = False
+    if args.gpu:
+        if torch.cuda.is_available():
+            cuda = True
+        else:
+            print("Warning! GPU flag was set however no GPU is available in the machine")
+    
+    
+    with open(category_names, 'r') as f:
+        	cat_to_name = json.load(f)
+            
+    model_loaded, optimizer_loaded, scheduler_loaded = load_checkpoint(checkpoint)
+    #image = process_image()
+    predict(image_path, model_loaded, top_k,cuda,cat_to_name)
+    
+
+            
+if __name__ == '__main__':
+    main()
+          
