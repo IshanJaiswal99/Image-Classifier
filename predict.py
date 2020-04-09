@@ -50,3 +50,36 @@ def process_image(image):
 
     return np_image
 
+def predict(image_path, model, topk,cuda,cat_to_name):
+    ''' Predict the class (or classes) of an image using a trained deep learning model.
+    '''
+    # TODO: Implement the code to predict the class from an image file
+    image = process_image(image_path)
+    image = torch.from_numpy(image)
+    image = image.unsqueeze_(0)
+    if cuda:
+        device =   torch.device("cuda:0")
+        image = image.cuda().float()
+    else:
+        device =  torch.device("cpu")
+    #image = image.to(device)
+    model.to(device)
+    model.eval()
+    
+    with torch.no_grad():
+        output = model(image)
+        #output = torch.nn.functional.softmax(output, dim=1)
+        prob, idxs = torch.topk(output, topk,)
+        probs = prob[0].tolist()
+        idxs = np.array(idxs)
+        idx_to_class = {val:key for key, val in model.class_to_idx.items()}
+        classes = [idx_to_class[idx] for idx in idxs[0]]
+        
+        # map the class name with collected topk classes
+        names = []
+        for cls in classes:
+            names.append(cat_to_name[str(cls)])
+        
+    print_result(probs, names)
+    
+
